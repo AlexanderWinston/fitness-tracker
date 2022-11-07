@@ -4,6 +4,7 @@ async function getRoutineById(id){
 }
 
 async function getRoutinesWithoutActivities(){
+  console.log(getRoutinesWithoutActivities, '!!!!!')
 }
 
 async function getAllRoutines() {

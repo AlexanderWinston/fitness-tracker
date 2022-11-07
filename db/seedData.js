@@ -1,14 +1,33 @@
+/* eslint-disable no-useless-catch */
 // require in the database adapter functions as you write them (createUser, createActivity...)
 // const { } = require('./');
-const client = require("./client")
+const  client  = require("./client");
+const { createUser, createActivity, createRoutine, getRoutinesWithoutActivities, getAllActivities, addActivityToRoutine,} = require('./')
 
 async function dropTables() {
-  console.log("Dropping All Tables...")
+  try {
+    console.log("Dropping All Tables...")
+    await client.query(`DROP TABLE IF EXISTS tableOne;
+    `);
+  console.log("finished dropping")}
+  catch (error){
+      throw error
+    }
+  }
   // drop all tables, in the correct order
-}
+
 
 async function createTables() {
-  console.log("Starting to build tables...")
+  try {
+    console.log("Starting to build tables...")
+    await client.query(`CREATE TABLE tableOne();
+    `)
+    console.log("Finished building tables...")
+} 
+catch (error){
+  throw error
+}
+
   // create all tables, in the correct order
 }
 
@@ -111,6 +130,7 @@ async function createInitialRoutineActivities() {
   console.log("starting to create routine_activities...")
   const [bicepRoutine, chestRoutine, legRoutine, cardioRoutine] =
     await getRoutinesWithoutActivities()
+    console.log(bicepRoutine, '!!!!')
   const [bicep1, bicep2, chest1, chest2, leg1, leg2, leg3] =
     await getAllActivities()
 
