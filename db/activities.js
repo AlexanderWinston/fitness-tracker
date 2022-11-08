@@ -8,9 +8,6 @@ async function getAllActivities() {
     SELECT *
     FROM activities;
     `)
-    // const activities = await Promise.all(
-    //   activityIds.map((activity) => getActivityById(activity.id))
-    // )
     return rows
   }
 catch (error){
@@ -74,20 +71,16 @@ async function createActivity({ name, description }) {
 // do update the name and description
 // return the updated activity
 async function updateActivity({ id, ...fields }) {
-  const {name, description} = fields
- 
-  
-  
-
+  console.log(fields)
   const setString = Object.keys(fields).map(
     ((key, index) => `"${key}"=$${index + 1}`)
   ).join(', ')
-
+console.log(setString)
   try {
     if (setString.length > 0) {
       await client.query(`
       UPDATE activities
-      SET ${fields}
+      SET ${setString}
       WHERE id = ${id}
       RETURNING *;
       `, Object.values(fields));
