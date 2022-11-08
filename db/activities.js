@@ -3,10 +3,34 @@ const client = require("./client")
 
 // database functions
 async function getAllActivities() {
-
+  try {
+    const { rows: activityIds} = await client.query(`
+    SELECT id
+    FROM activities;
+    `)
+    const activities = await Promise.all(
+      activityIds.map((activity) => getActivityById(activity.id))
+    )
+    return [activities]
+  }
+catch (error){
+  throw error
+}
 }
 
 async function getActivityById(id) {
+  try {
+    const { rows: [activity]} = await client.query(`
+    SELECT *
+    FROM activities
+    WHERE id=$1;`[id])
+    return activity
+  }
+  catch (error){
+    throw error
+  }
+  
+  
   
 }
 
@@ -20,6 +44,18 @@ async function getActivityByName(name) {
 
 // return the new activity
 async function createActivity({ name, description }) {
+  try {
+    const { rows: [activity]} = await client.query(`
+    INSERT INTO activities(name, description)
+    VALUES ($1, $2)
+    RETURNING *;
+    `[name, description])
+    return activity
+    
+  }
+  catch (error){
+    throw error
+  }
 
 }
 
