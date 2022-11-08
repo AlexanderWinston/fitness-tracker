@@ -15,8 +15,8 @@ async function getActivityByName(name) {
 }
 
 // select and return an array of all activities
-async function attachActivitiesToRoutines(routines) {
-}
+// async function attachActivitiesToRoutines(routines) {
+// }
 
 // return the new activity
 async function createActivity({ name, description }) {
