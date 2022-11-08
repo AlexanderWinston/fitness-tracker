@@ -4,14 +4,14 @@ const client = require("./client")
 // database functions
 async function getAllActivities() {
   try {
-    const { rows: activityIds} = await client.query(`
-    SELECT id
+    const { rows} = await client.query(`
+    SELECT *
     FROM activities;
     `)
-    const activities = await Promise.all(
-      activityIds.map((activity) => getActivityById(activity.id))
-    )
-    return [activities]
+    // const activities = await Promise.all(
+    //   activityIds.map((activity) => getActivityById(activity.id))
+    // )
+    return rows
   }
 catch (error){
   throw error
@@ -23,10 +23,9 @@ async function getActivityById(id) {
     const { rows: [activity]} = await client.query(`
     SELECT *
     FROM activities
-    WHERE id=$1;`[id])
-    return activity
-  }
-  catch (error){
+    WHERE id=$1;`,[id])
+    return activity;
+  } catch(error){
     throw error
   }
   
@@ -35,6 +34,18 @@ async function getActivityById(id) {
 }
 
 async function getActivityByName(name) {
+  try {
+    const {
+      rows: [activity]
+    } = await client.query(`
+    SELECT *
+    FROM activities
+    WHERE name = $1;
+    `, [name])
+    return activity
+  } catch(error){
+    throw error
+  }
 
 }
 
@@ -49,7 +60,7 @@ async function createActivity({ name, description }) {
     INSERT INTO activities(name, description)
     VALUES ($1, $2)
     RETURNING *;
-    `[name, description])
+    `, [name, description])
     return activity
     
   }
@@ -63,7 +74,28 @@ async function createActivity({ name, description }) {
 // do update the name and description
 // return the updated activity
 async function updateActivity({ id, ...fields }) {
+  const {name, description} = fields
+ 
+  
+  
 
+  const setString = Object.keys(fields).map(
+    ((key, index) => `"${key}"=$${index + 1}`)
+  ).join(', ')
+
+  try {
+    if (setString.length > 0) {
+      await client.query(`
+      UPDATE activities
+      SET ${fields}
+      WHERE id = ${id}
+      RETURNING *;
+      `, Object.values(fields));
+    
+    return await getActivityById(id);}
+  } catch(error){
+    throw error
+  }
 }
 
 async function attachActivitiesToRoutines(routines) {
