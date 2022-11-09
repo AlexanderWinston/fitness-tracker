@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-catch */
 const client = require('./client');
+const { attachActivitiesToRoutines } = require('./')
 
 async function getRoutineById(id){
   try {
@@ -14,19 +15,27 @@ async function getRoutineById(id){
 }
 
 async function getRoutinesWithoutActivities(){
-  // try {
-  //   const { rows: [routine]} = await client.query
-  // }
-  // // console.log(getRoutinesWithoutActivities, '!!!!!')
-}
-
-async function getAllRoutines() {
   try {
-    const { rows} = await client.query(`
+    const { rows } = await client.query(`
     SELECT *
     FROM routines;
     `)
     return rows
+  } catch(error){
+    throw error
+  }
+  
+}
+
+async function getAllRoutines() {
+  try {
+    const { rows: routines } = await client.query(`
+    SELECT *
+    FROM routines;
+    `)
+    const routinesWithActivities = await attachActivitiesToRoutines(routines)
+    console.log(routines)
+    return routinesWithActivities
   }
 catch (error){
   throw error
@@ -40,6 +49,7 @@ async function getPublicRoutinesByUser({username}) {
 }
 
 async function getAllPublicRoutines() {
+
 }
 
 async function getPublicRoutinesByActivity({id}) {
