@@ -81,6 +81,7 @@ async function destroyRoutine(id) {
      DELETE FROM routines
      WHERE id = $1;
      `, [id])
+     
     
     return routineDestroy
      
