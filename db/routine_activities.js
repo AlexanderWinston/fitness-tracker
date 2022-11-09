@@ -28,7 +28,7 @@ async function addActivityToRoutine({
     ON CONFLICT ("routineId", "activityId") DO NOTHING
     RETURNING *;
     `, [routineId, activityId, count, duration])
-    console.log(activity)
+    
     return activity
   } catch (error) {
     throw error;
@@ -37,12 +37,57 @@ async function addActivityToRoutine({
 }
 
 async function getRoutineActivitiesByRoutine({id}) {
+  // console.log({id})
+  try {
+    const { rows } = await client.query(`
+    SELECT *
+    FROM routine_activities
+    WHERE "routineId"=$1;
+    `, [id])
+    console.log(rows,"!!!!")
+    return rows
+  } catch(error){
+    throw error
+  }
+  
 }
 
 async function updateRoutineActivity ({id, ...fields}) {
+
+  const setString = Object.keys(fields).map(
+    ((key, index) => `"${key}"=$${index + 1}`)
+  ).join(', ')
+
+  try {
+    if (setString.length > 0) {
+      await client.query(`
+      UPDATE routine_activities
+      SET ${setString}
+      WHERE id = ${id}
+      RETURNING *;
+      `, Object.values(fields));
+    
+    return await getRoutineActivityById(id);}
+  } catch(error){
+    throw error
+  }
 }
 
 async function destroyRoutineActivity(id) {
+  try{
+   const {
+    rows:[routineActivityDestroy]
+   } = await client.query(`
+    DELETE FROM routine_activities
+    WHERE id = $1
+    RETURNING *;
+    `, [id])
+   console.log(routineActivityDestroy)
+   return routineActivityDestroy
+    
+  } catch(error){
+    throw error
+  }
 }
 
 async function canEditRoutineActivity(routineActivityId, userId) {

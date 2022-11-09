@@ -74,6 +74,19 @@ async function updateRoutine({id, ...fields}) {
 }
 
 async function destroyRoutine(id) {
+  try{
+    const {
+     rows:[routineDestroy]
+    } = await client.query(`
+     DELETE FROM routines
+     WHERE id = $1;
+     `, [id])
+    
+    return routineDestroy
+     
+   } catch(error){
+     throw error
+   }
 }
 
 module.exports = {
