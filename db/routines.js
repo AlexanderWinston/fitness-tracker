@@ -1,6 +1,7 @@
 /* eslint-disable no-useless-catch */
 const client = require('./client');
-const { attachActivitiesToRoutines } = require('./')
+const { attachActivitiesToRoutines } = require('./activities')
+const { getUserByUsername } = require('./users')
 
 async function getRoutineById(id){
   try {
@@ -30,12 +31,14 @@ async function getRoutinesWithoutActivities(){
 async function getAllRoutines() {
   try {
     const { rows: routines } = await client.query(`
-    SELECT *
-    FROM routines;
-    `)
-    const routinesWithActivities = await attachActivitiesToRoutines(routines)
-    console.log(routines)
-    return routinesWithActivities
+    SELECT routines."isPublic", routines."creatorId", routines.goal, routines.name, routines.id, users.username AS "creatorName"
+    FROM routines
+    JOIN users ON routines."creatorId"=users.id; 
+   `)
+    // console.log(routines, 'this is routines')
+    const result = await attachActivitiesToRoutines(routines)
+    // console.log(result, 'this is result')
+    return result
   }
 catch (error){
   throw error
@@ -43,12 +46,39 @@ catch (error){
 }
 
 async function getAllRoutinesByUser({username}) {
+  try{
+    const user = await getUserByUsername(username)
+
+    const {rows: routineId } = await client.query(`
+    SELECT routines."isPublic", routines."creatorId", routines.goal, routines.name, routines.id, users.username AS "creatorName"
+    FROM routines
+    JOIN users ON routines."creatorId"=users.id
+    WHERE routines."creatorId"=$1;
+    `,[user.id])
+    const result = await attachActivitiesToRoutines(routineId)
+    return result
+  } catch(error){
+    throw error
+  }
 }
 
 async function getPublicRoutinesByUser({username}) {
 }
 
 async function getAllPublicRoutines() {
+  try {
+    const { rows: publicRoutines} = await client.query(`
+    SELECT routines."isPublic", routines."creatorId", routines.goal, routines.name, routines.id, users.username AS "creatorName"
+    FROM routines
+    JOIN users ON routines."creatorId"=users.id
+    WHERE "isPublic" = true;
+    `)
+    const result = await attachActivitiesToRoutines(publicRoutines)
+    console.log(publicRoutines,'this is publicRoutines')
+    return result
+  } catch(error){
+    throw error
+  }
 
 }
 
