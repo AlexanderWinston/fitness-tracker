@@ -264,7 +264,7 @@ describe("DB Routines", () => {
     });
   });
 
-  describe.only("getPublicRoutinesByUser", () => {
+  describe("getPublicRoutinesByUser", () => {
 
     it("should include the public routine", async () => {
       const routines = await getPublicRoutinesByUser(fakeUser);
@@ -312,7 +312,7 @@ describe("DB Routines", () => {
     });
   });
 
-  describe("getPublicRoutinesByActivity", () => {
+  describe.only("getPublicRoutinesByActivity", () => {
 
     it("should include the public routine containing a specific activityId", async () => {
       const routines = await getPublicRoutinesByActivity(fakeActivity);

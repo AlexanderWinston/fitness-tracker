@@ -1,6 +1,6 @@
 /* eslint-disable no-useless-catch */
 const client = require('./client');
-const { attachActivitiesToRoutines } = require('./activities')
+const { attachActivitiesToRoutines, getActivityById } = require('./activities')
 const { getUserByUsername } = require('./users')
 
 async function getRoutineById(id){
@@ -35,9 +35,9 @@ async function getAllRoutines() {
     FROM routines
     JOIN users ON routines."creatorId"=users.id; 
    `)
-    // console.log(routines, 'this is routines')
+  
     const result = await attachActivitiesToRoutines(routines)
-    // console.log(result, 'this is result')
+    
     return result
   }
 catch (error){
@@ -89,7 +89,7 @@ async function getAllPublicRoutines() {
     WHERE "isPublic" = true;
     `)
     const result = await attachActivitiesToRoutines(publicRoutines)
-    console.log(publicRoutines,'this is publicRoutines')
+    
     return result
   } catch(error){
     throw error
@@ -98,6 +98,27 @@ async function getAllPublicRoutines() {
 }
 
 async function getPublicRoutinesByActivity({id}) {
+  try {
+// const activity = await getActivityById(id)
+// console.log(activity.id, "this is activity!!")
+    const { rows: publicRoutines} = await client.query(`
+    SELECT routines."isPublic", routines."creatorId", routines.goal, routines.name, routines.id, users.username AS "creatorName", activityId
+    FROM routines
+    JOIN users ON routines."creatorId"=users.id
+    JOIN activities ON 
+    WHERE "isPublic" = true
+    AND activity.id =$1 ;
+    `,[id])
+    console.log(publicRoutines, "this is public routines")
+    const result = await attachActivitiesToRoutines(publicRoutines)
+    
+    return result
+  } catch(error){
+    throw error
+  }
+
+
+
 }
 
 async function createRoutine({creatorId, isPublic, name, goal}) {
