@@ -102,12 +102,14 @@ async function getPublicRoutinesByActivity({id}) {
 // const activity = await getActivityById(id)
 // console.log(activity.id, "this is activity!!")
     const { rows: publicRoutines} = await client.query(`
-    SELECT routines."isPublic", routines."creatorId", routines.goal, routines.name, routines.id, users.username AS "creatorName", activityId
+    SELECT routines."isPublic", routines."creatorId", routines.goal, routines.name, routines.id, users.username AS "creatorName", "activityId", "routineId"
     FROM routines
     JOIN users ON routines."creatorId"=users.id
-    JOIN activities ON 
+    JOIN routines ON routine_activities."routineId" = routines.id
+    JOIN activities ON routines_activities."activityId"=activities.id
+    
     WHERE "isPublic" = true
-    AND activity.id =$1 ;
+    AND activityId =$1 ;
     `,[id])
     console.log(publicRoutines, "this is public routines")
     const result = await attachActivitiesToRoutines(publicRoutines)
