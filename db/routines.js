@@ -99,7 +99,8 @@ async function getAllPublicRoutines() {
 
 async function getPublicRoutinesByActivity({id}) {
   try {
-// const activity = await getActivityById(id)
+    //*****needing to troubleshoot test error/query*** */
+// const activity = await getActivityById(id) 
 // console.log(activity.id, "this is activity!!")
     const { rows: publicRoutines} = await client.query(`
     SELECT routines."isPublic", routines."creatorId", routines.goal, routines.name, routines.id, users.username AS "creatorName", "activityId", "routineId"
