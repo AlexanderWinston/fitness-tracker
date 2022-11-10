@@ -82,3 +82,33 @@ module.exports = {
   getUserById,
   getUserByUsername,
 }
+
+// async function getUser({ username, password }) {
+//   const user = await getUserByUsername(username);
+//   const hashedPassword = user.password;
+//   const passwordsMatch = await bcrypt.compare(password, hashedPassword);
+//   try {
+//     const { rows:[user], } = await client.query(`
+//     SELECT * 
+//     FROM users
+//     WHERE username=$1;
+//     `,[username])
+//     if (passwordsMatch) {
+//       // return the user object (without the password)
+//       return user
+//     } else {
+//       throw SomeError;
+//     }
+//     // if(user && user.password == password){
+//       delete user.password
+//       return user
+//     // }else {
+//     // return null 
+    
+
+    
+//   } catch(error){
+//     throw error
+//   }
+
+// }

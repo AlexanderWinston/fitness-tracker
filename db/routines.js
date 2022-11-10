@@ -99,22 +99,16 @@ async function getAllPublicRoutines() {
 
 async function getPublicRoutinesByActivity({id}) {
   try {
-    //*****needing to troubleshoot test error/query*** */
-// const activity = await getActivityById(id) 
-// console.log(activity.id, "this is activity!!")
     const { rows: publicRoutines} = await client.query(`
     SELECT routines."isPublic", routines."creatorId", routines.goal, routines.name, routines.id, users.username AS "creatorName", "activityId", "routineId"
     FROM routines
     JOIN users ON routines."creatorId"=users.id
-    JOIN routines ON routine_activities."routineId" = routines.id
-    JOIN activities ON routines_activities."activityId"=activities.id
-    
+    JOIN routine_activities ON routines.id="routineId"
+    JOIN activities ON routine_activities."activityId"=activities.id
     WHERE "isPublic" = true
-    AND activityId =$1 ;
+    AND "activityId" =$1 ;
     `,[id])
-    console.log(publicRoutines, "this is public routines")
     const result = await attachActivitiesToRoutines(publicRoutines)
-    
     return result
   } catch(error){
     throw error
@@ -140,19 +134,45 @@ async function createRoutine({creatorId, isPublic, name, goal}) {
 
 
 async function updateRoutine({id, ...fields}) {
+  const setString = Object.keys(fields).map(
+    ((key, index) => `"${key}"=$${index + 1}`)
+  ).join(', ')
+
+  try {
+    if (setString.length > 0) {
+      await client.query(`
+      UPDATE routines
+      SET ${setString}
+      WHERE id = ${id}
+      RETURNING *;
+      `, Object.values(fields));
+    
+    return await getRoutineById(id);}
+  } catch(error){
+    throw error
+  }
+
 }
 
 async function destroyRoutine(id) {
   try{
+    await client.query(`
+    DELETE FROM routine_activities
+    WHERE routine_activities."routineId"= $1;
+    
+    `, [id])
+    
     const {
-     rows:[routineDestroy]
+      rows:[routineDestroy]
     } = await client.query(`
-     DELETE FROM routines
-     WHERE id = $1;
-     `, [id])
+    DELETE FROM routines
+    WHERE id = $1
+    RETURNING *;
+    `, [id])
+     return routineDestroy
+
      
     
-    return routineDestroy
      
    } catch(error){
      throw error
