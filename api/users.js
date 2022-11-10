@@ -5,10 +5,41 @@ const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
 
 // POST /api/users/login
+usersRouter.post("/login", async (req, res, next) =>{
+	const { username, password} = req.body;
+	if(!username || !password){
+		next({
+			name:"MissingCredentialsError",
+			message:"Please supply both a username and password",
+		})
+	}
+	try{
+		const user = await getUserByUsername(username)
+		if(user && user.password == password){
+			const token = jwt.sign({ id: user.id, username }, JWT_SECRET) 
+				res.send({ message: "you're logged in!", token, user})
+		
+		} else{
+			next({
+				name: "IncorrectCredentialsError",
+				message: "Username or Password is incorrect",
+			})
+		}
+	} catch(error){
+		next(error);
+	}
+})
 
 // POST /api/users/register
 usersRouter.post("/register",async (req, res, next) =>{
+	
 	const { username, password } = req.body;
+	if (!username || !password) {
+		next({
+		name: "MissingCredentialsError",
+		message: "Please supply both a username and password",
+		});
+	}
 	if(password.length < 8){
 		next({
 			name:"PasswordLengthError",
