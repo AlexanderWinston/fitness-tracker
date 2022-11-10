@@ -84,5 +84,6 @@ usersRouter.get("/me", requireUser, async (res, next)=>{
 })
 
 // GET /api/users/:username/routines
+// usersRouter.get("/:username/routines", async ())
 
 module.exports = usersRouter;
