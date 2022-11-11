@@ -55,7 +55,7 @@ routinesRouter.patch('/:routineId', requireUser, async (req, res, next)=> {
 			res.send({routine:updatedRoutine})
 		} else {
 			
-				res.statusCode(403)
+				res.statusCode= 403
 				next({
 				name: "UnauthorizedUserError",
 				message: "You cannot update a routine that is not yours"
