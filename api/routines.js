@@ -6,6 +6,8 @@ const {
   getRoutineById,
   updateRoutine,
   destroyRoutine,
+  getActivityById,
+  attachActivitiesToRoutines
 } = require("../db");
 const { requireUser } = require("./utils");
 const routinesRouter = express.Router();
@@ -102,5 +104,33 @@ routinesRouter.delete("/:routineId", requireUser, async (req, res, next) => {
 });
 
 // POST /api/routines/:routineId/activities
+// routinesRouter.post('/:routineId/activities', async(req, res, next)=> {
+// 	console.log("this is a random string");
+//   const routineId = req.params.routineId
+//   const { id, creatorId, isPublic, name, goal} = req.body;
+  
+//   // const activityData = {id, name, description};
+//   // console.log(activityData)
+//   try {
+    
+//     const activities = await attachActivitiesToRoutines(routineId);
+//     console.log(activities, "this is routine");
+
+//     if (activities) {
+//       next({
+//         error: "routineError",
+//         message: `An routine with name ${name} already exists`,
+//         name: "routineActivityError",
+//       });
+//     } else {
+//       const activity = await createActivity({ id, name, description });
+
+//       res.send( {activities});
+//     }
+//   } catch ({ error, name, message }) {
+//     next(error, name, message);
+//   }
+// })
+
 
 module.exports = routinesRouter;

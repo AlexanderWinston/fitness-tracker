@@ -4,7 +4,8 @@ const {
   createActivity,
   getActivityByName,
   getPublicRoutinesByActivity,
-  getActivityById
+  getActivityById,
+  updateActivity
 } = require("../db"); 
 const { requireUser } = require("./utils");
 const activitiesRouter = express.Router();
@@ -40,13 +41,13 @@ activitiesRouter.get("/", async (req, res) => {
 // POST /api/activities
 // requireUser not included below?
 activitiesRouter.post("/", requireUser, async (req, res, next) => {
-  console.log("this is a random string");
+ 
   const { id, name, description } = req.body;
   // const activityData = {id, name, description};
   // console.log(activityData)
   try {
     const alreadyMadeActivity = await getActivityByName(name);
-    console.log(alreadyMadeActivity, "this is alreadyMadeActivity");
+   ;
 
     if (alreadyMadeActivity) {
       next({
@@ -65,5 +66,52 @@ activitiesRouter.post("/", requireUser, async (req, res, next) => {
 });
 
 // PATCH /api/activities/:activityId
-activitiesRouter
+activitiesRouter.patch("/:activityId", requireUser, async (req,res,next)=>{
+  //need to troubleshoot error if updated name = original name
+    try {
+      const activityId = req.params.activityId;
+      const originalActivity = await getActivityById(activityId);
+      if (originalActivity) {
+        
+          const fields = req.body;
+          const updatedActivity = await updateActivity({
+            id: activityId,
+            ...fields,
+          });
+          console.log(updatedActivity.name, "this is updated activity")
+          // if ( name: originalActivity.name === updatedActivity.name){
+          //   next ({
+          //     error:"activityAlreadyExistsError",
+          //     message:`An activity with name ${originalActivity.name} already exists`,
+          //     name: "ActivityExists"
+          //   })
+          
+//           if (updatedActivity.name !== originalActivity.name){
+// console.log(originalActivity.name, " this is activity name")
+// console.log(updatedActivity.name, "this is updated name")
+            res.send(updatedActivity);
+          // } else {
+          //     next ({
+          //     error:"activityAlreadyExistsError",
+          //     message:`An activity with name ${originalActivity.name} already exists`,
+          //     name: "ActivityExists"
+          //   })
+            
+
+          } 
+        
+       else {
+        next({
+          error: "noActivity",
+          name: "Does not exist",
+          message: `Activity ${activityId} not found`,
+        });
+      }
+    } catch ({ error, name, message }) {
+      next({ error, name, message });
+    }
+  });
+
+
+
 module.exports = activitiesRouter;
