@@ -12,22 +12,20 @@ routinesRouter.get('/', async (req, res) =>{
 
 // POST /api/routines
 routinesRouter.post('/', requireUser, async (req, res, next) =>{
-	const { id, creatorId, isPublic, name, goal } = req.body;
-	const routineData = {id, creatorId, isPublic, name, goal};
+	const {  creatorId, isPublic, name, goal } = req.body;
+	const routineData = {creatorId, isPublic, name, goal};
 	try {
 		const routines = await createRoutine(routineData)
-		const user = await getUserById(id); 
-		
-		if(routines && creatorId === user.id){
-			res.send (routines)
-
-		}else{
-			next ({name: "noRoutineError",
-				message: "Valid routine is necessary",
-				})
-}
-		} catch({name, message}){
-			next({name, message:`An routine with ${routineData.id} already exists`})
+		console.log(routines)
+		// if (creatorId == req.user.id){
+		res.send({
+			creatorId:req.user.id, 
+			isPublic,
+			name,
+			goal
+		})
+	}catch({name, message}){
+			next({name, message})
 
 
 		}
