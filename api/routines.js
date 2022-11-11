@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllPublicRoutines, createRoutine, getUserById,  } = require('../db');
+const { getAllPublicRoutines, createRoutine, getUserById, getRoutineById, updateRoutine,  } = require('../db');
 const { requireUser} = require('./utils')
 const routinesRouter = express.Router();
 
@@ -33,6 +33,41 @@ routinesRouter.post('/', requireUser, async (req, res, next) =>{
 })
 
 // PATCH /api/routines/:routineId
+routinesRouter.patch('/:routineId', requireUser, async (req, res, next)=> {
+	const{routineId} =req.params
+	const {creatorId, isPublic, name, goal } = req.body
+	const updateFields = {}
+
+	if (isPublic){
+		updateFields.isPublic=isPublic
+	}
+	if (name){
+		updateFields.name=name
+	}
+	if (goal){
+		updateFields.goal=goal
+	}
+	try {
+		const originalRoutine = await getRoutineById(routineId)
+		console.log(originalRoutine, "original Routine!!")
+		if(originalRoutine.creatorId === req.user.id){
+			const updatedRoutine = await updateRoutine(routineId, updateFields)
+			res.send({routine:updatedRoutine})
+		} else {
+			
+				res.statusCode(403)
+				next({
+				name: "UnauthorizedUserError",
+				message: "You cannot update a routine that is not yours"
+			})
+		
+		}
+
+	} catch({name,message}){
+		next({name,message})
+	}
+	
+})
 
 // DELETE /api/routines/:routineId
 
