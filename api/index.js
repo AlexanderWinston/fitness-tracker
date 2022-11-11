@@ -14,7 +14,7 @@ router.use(async (req, res, next) =>{
         const token=auth.slice(prefix.length);
 
         try {
-            // console.log("about to do the JWT thing")
+            
             const{id}=jwt.verify(token, JWT_SECRET);
             if (id){
                 req.user =await getUserById(id);
@@ -32,13 +32,13 @@ router.use(async (req, res, next) =>{
     }
 })
 //note
-router.use((req, res, next)=> {
-    // console.log('marscapone')
-    if (req.user){
-        console.log("User is set:", req.user);
-    }
-    next();
-});
+// router.use((req, res, next)=> {
+   
+//     if (req.user){
+//         console.log("User is set:", req.user);
+//     }
+//     next();
+// });
 
 // GET /api/health
 router.get('/health', async (req, res, next) => {

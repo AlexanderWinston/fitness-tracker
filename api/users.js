@@ -1,5 +1,5 @@
 const express = require('express');
-const { getUserByUsername, createUser, getUserById } = require('../db');
+const { getUserByUsername, createUser, getUserById, getPublicRoutinesByUser } = require('../db');
 const usersRouter = express.Router();
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
@@ -66,16 +66,16 @@ usersRouter.post("/register",async (req, res, next) =>{
 })
 
 // GET /api/users/me
-usersRouter.get("/me", async (req, res, next)=>{
-	console.log("hereeee")
-if (!req.user){
-	res.statusCode = 401
-	res.send({
-		error: "UserError",
-		name:"Unauthorized User Error",
-		message:"You must be logged in to perform this action"
-	})
-}
+usersRouter.get("/me", requireUser,async (req, res, next)=>{
+	
+// if (!req.user){
+// 	res.statusCode = 401
+// 	res.send({
+// 		error: "UserError",
+// 		name:"Unauthorized User Error",
+// 		message:"You must be logged in to perform this action"
+// 	})
+// }
 
 	try {
 		await getUserById(req.user.id)
@@ -100,6 +100,13 @@ if (!req.user){
 })
 
 // GET /api/users/:username/routines
-// usersRouter.get("/:username/routines", async ())
+usersRouter.get("/:username/routines", async (req, res, next) => {
+	try {
+		const user = await getPublicRoutinesByUser(req.params)
+		res.send(user)
+	} catch ({name,message}){
+		next({name,message})
+	}
+})
 
 module.exports = usersRouter;
