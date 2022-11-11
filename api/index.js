@@ -63,7 +63,7 @@ router.use('/routine_activities', routineActivitiesRouter);
 
 router.use((error, req, res, next)=>{
     res.send({
-        // error: error.name,
+        error: error.name,
         name: error.name,
         message: error.message
     })
