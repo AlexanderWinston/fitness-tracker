@@ -31,7 +31,7 @@ routines_activitiesRouter.delete("/:routineActivityId", requireUser, async(req, 
           next({
             error: "noRoutineError",
             name: "Does not exist",
-            message: `${routineId} does not exist`,
+            message: `${routineActivityId} does not exist`,
           });
         }
       } catch ({ error, name, message }) {
