@@ -1,5 +1,5 @@
 const express = require('express');
-const { getUserByUsername, createUser } = require('../db');
+const { getUserByUsername, createUser, getUserById } = require('../db');
 const usersRouter = express.Router();
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
@@ -66,16 +66,32 @@ usersRouter.post("/register",async (req, res, next) =>{
 })
 
 // GET /api/users/me
-usersRouter.get("/me", requireUser, async (res, next)=>{
+usersRouter.get("/me", async (req, res, next)=>{
+	console.log("hereeee")
+if (!req.user){
+	res.statusCode = 401
+	res.send({
+		error: "UserError",
+		name:"Unauthorized User Error",
+		message:"You must be logged in to perform this action"
+	})
+}
+
 	try {
-		const user = await getUserByUsername(username);
-		console.log(user, 'this is user')
-		const token =jwt.sign({ id: user.id, username}, JWT_SECRET)
+		await getUserById(req.user.id)
+		res.send({
+			id: req.user.id,
+			username : req.user.username
+		})
+		// const user = await getUserByUsername(username);
+		// console.log(user, 'this is user')
+		// const token =jwt.sign({ id: user.id, username}, JWT_SECRET)
 	
-		if(user && user.token ==token ){
-			res.send({ user })
+		// if(user.token == token ){
+		// 	console.log(token)
+		// 	res.send({ user })
 	
-		}
+		// }
 
 	} catch({name, message}){
 		next({name, message});
