@@ -3,13 +3,33 @@ const {
   getAllActivities,
   createActivity,
   getActivityByName,
-} = require("../db");
+  getPublicRoutinesByActivity,
+  getActivityById
+} = require("../db"); 
 const { requireUser } = require("./utils");
 const activitiesRouter = express.Router();
 // GET /api/activities/:activityId/routines
-// activitiesRouter.get('/', async (res, next) => {
-// 	const
-// })
+activitiesRouter.get('/:activityId/routines', async (req, res, next) => {
+	try{
+	const activityId = req.params.activityId
+	const activity = await getActivityById(activityId)
+	if(!activity){
+		next({
+			message:`Activity ${activityId} not found`,
+			error:"noActivityError",
+			name:"noActivity",
+		})
+	}else{
+	const publicRoutinesByActivity = await getPublicRoutinesByActivity(activity)
+		res.send(publicRoutinesByActivity)
+
+	}
+	// console.log(publicRoutinesByActivity, 'this is public routines by activity')
+} catch({name, message}){
+	next({name, message})
+
+}
+})
 
 // GET /api/activities
 activitiesRouter.get("/", async (req, res) => {
@@ -45,5 +65,5 @@ activitiesRouter.post("/", requireUser, async (req, res, next) => {
 });
 
 // PATCH /api/activities/:activityId
-
+activitiesRouter
 module.exports = activitiesRouter;
