@@ -1,11 +1,11 @@
 const express = require('express');
-const { getAllRoutines, createRoutine, getUserById,  } = require('../db');
+const { getAllPublicRoutines, createRoutine, getUserById,  } = require('../db');
 const { requireUser} = require('./utils')
 const routinesRouter = express.Router();
 
 // GET /api/routines
 routinesRouter.get('/', async (req, res) =>{
-	const allRoutines = await getAllRoutines();
+	const allRoutines = await getAllPublicRoutines();
 	console.log(allRoutines)
 	res.send(allRoutines)
 })
