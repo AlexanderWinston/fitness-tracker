@@ -71,25 +71,37 @@ activitiesRouter.patch("/:activityId", requireUser, async (req,res,next)=>{
     try {
       const activityId = req.params.activityId;
       const originalActivity = await getActivityById(activityId);
+      
+      const fields = req.body;
+        const updatedActivity = await updateActivity({
+          id: activityId,
+          ...fields,
+        })
+          
       if (originalActivity) {
-        
-          const fields = req.body;
-          const updatedActivity = await updateActivity({
-            id: activityId,
-            ...fields,
-          });
+          
           console.log(updatedActivity.name, "this is updated activity")
-          // if ( name: originalActivity.name === updatedActivity.name){
-          //   next ({
-          //     error:"activityAlreadyExistsError",
-          //     message:`An activity with name ${originalActivity.name} already exists`,
-          //     name: "ActivityExists"
-          //   })
+          console.log(originalActivity.name, "this is original activity")
+          if  (updatedActivity.name !== originalActivity.name){
+            res.send(updatedActivity)
+            // next ({
+            //   error:"activityAlreadyExistsError",
+            //   message:`An activity with name ${originalActivity.name} already exists`,
+            //   name: "ActivityExists"
+            // })
+          }else {
+            // res.send(updatedActivity)
+            next({
+              error:"activityAlreadyExistsError",
+              message:`An activity with name ${originalActivity.name} already exists`,
+              name: "ActivityExists"
+            })
+          }
           
 //           if (updatedActivity.name !== originalActivity.name){
 // console.log(originalActivity.name, " this is activity name")
 // console.log(updatedActivity.name, "this is updated name")
-            res.send(updatedActivity);
+            // res.send(updatedActivity);
           // } else {
           //     next ({
           //     error:"activityAlreadyExistsError",
