@@ -52,7 +52,7 @@ describe("DB Routine Activities", () => {
     })
   })
 
-  describe("getRoutineActivitiesByRoutine", () => {
+  describe.only("getRoutineActivitiesByRoutine", () => {
     it("should return the routine activities for a routine", async () => {
       const fakeUser = await createFakeUser("Timmy")
       const fakeActivity = await createFakeActivity("Fortnite", "I know it's not exercise")
@@ -126,7 +126,7 @@ describe("DB Routine Activities", () => {
     })
   })
 
-  describe.only("canEditRoutineActivity", () => {
+  describe("canEditRoutineActivity", () => {
     it("should return true if routine activity can be edited by user", async () => {
       const fakeUser = await createFakeUser("Jay");
       const fakeRoutine = await createFakePublicRoutine(fakeUser.id, "At 3pm", "Forever");
