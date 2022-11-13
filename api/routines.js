@@ -119,20 +119,20 @@ console.log(routine, "this is routine")
 try {
   
   if (routine){
-    console.log(routine)
+    // console.log(routine)
     const {routineId, activityId, count, duration} = req.body
     const routineAct =  (await getRoutineActivitiesByRoutine({id: originalRoutineId})).map(element => element.activityId)
 
 
-    console.log(routineAct.includes(activityId),"this is routineAct with activity id" )
-    console.log(getRoutineActivitiesByRoutine, "line 123")
-    console.log(routineAct, "this is routine activities line 119")
+    // console.log(routineAct.includes(activityId),"this is routineAct with activity id" )
+    // console.log(getRoutineActivitiesByRoutine, "line 123")
+    // console.log(routineAct, "this is routine activities line 119")
       if(!routineAct.includes(activityId)){ 
-        console.log("it works!")
-        console.log(activityId, "activityId")
+        // console.log("it works!")
+        // console.log(activityId, "activityId")
         const addActivity = await addActivityToRoutine({routineId, activityId, count, duration})
-        console.log(addActivityToRoutine, "line 131")
-        console.log(addActivity, "this is line 132")
+        // console.log(addActivityToRoutine, "line 131")
+        // console.log(addActivity, "this is line 132")
         res.send(addActivity)
       }else {
         next({

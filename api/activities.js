@@ -71,31 +71,36 @@ activitiesRouter.patch("/:activityId", requireUser, async (req,res,next)=>{
     try {
       const activityId = req.params.activityId;
       const originalActivity = await getActivityById(activityId);
+      const allActivities = (await getAllActivities()).map(element => element.name)
+      console.log(allActivities, "this is all of them")
       
-      const fields = req.body;
+        
+          
+      if (originalActivity) {
+        const fields = req.body;
         const updatedActivity = await updateActivity({
           id: activityId,
           ...fields,
         })
-          
-      if (originalActivity) {
-          
+        
           console.log(updatedActivity.name, "this is updated activity")
           console.log(originalActivity.name, "this is original activity")
-          if  (updatedActivity.name !== originalActivity.name){
+          if  (allActivities.includes(updatedActivity.name)){
+            console.log("aslkjahsdkjhasd")
+            // res.send(updatedActivity)
+            next ({
+              
+              error:"activityAlreadyExistsError",
+              message:`An activity with name ${updatedActivity.name} already exists`,
+              name: "ActivityExists"
+            })
+          }else {
             res.send(updatedActivity)
-            // next ({
+            // next({
             //   error:"activityAlreadyExistsError",
             //   message:`An activity with name ${originalActivity.name} already exists`,
             //   name: "ActivityExists"
             // })
-          }else {
-            // res.send(updatedActivity)
-            next({
-              error:"activityAlreadyExistsError",
-              message:`An activity with name ${originalActivity.name} already exists`,
-              name: "ActivityExists"
-            })
           }
           
 //           if (updatedActivity.name !== originalActivity.name){
