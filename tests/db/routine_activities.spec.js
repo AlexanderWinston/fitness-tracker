@@ -52,7 +52,7 @@ describe("DB Routine Activities", () => {
     })
   })
 
-  describe.only("getRoutineActivitiesByRoutine", () => {
+  describe("getRoutineActivitiesByRoutine", () => {
     it("should return the routine activities for a routine", async () => {
       const fakeUser = await createFakeUser("Timmy")
       const fakeActivity = await createFakeActivity("Fortnite", "I know it's not exercise")

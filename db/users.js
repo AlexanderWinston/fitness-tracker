@@ -1,44 +1,46 @@
 /* eslint-disable no-useless-catch */
 const client = require("./client");
 
-// database functions
-
-// user functions
 async function createUser({ username, password }) {
   try {
-    const { rows: [user], } = await client.query(`
+    const {
+      rows: [user],
+    } = await client.query(
+      `
     INSERT INTO users(username, password)
     VALUES ($1, $2)
     ON CONFLICT (username) DO NOTHING
-    RETURNING *;`,[username, password])
-    delete user.password
+    RETURNING *;`,
+      [username, password]
+    );
+    delete user.password;
     return user;
+  } catch (error) {
+    throw error;
   }
-  catch (error){
-    throw error
-  }
-
-  
 }
 
 async function getUser({ username, password }) {
   try {
-    const { rows:[user], } = await client.query(`
+    const {
+      rows: [user],
+    } = await client.query(
+      `
     SELECT * 
     FROM users
     WHERE username=$1;
-    `,[username])
-    if(user && user.password == password){
-      delete user.password
-      return user
-    }else {
-    return null 
+    `,
+      [username]
+    );
+    if (user && user.password == password) {
+      delete user.password;
+      return user;
+    } else {
+      return null;
     }
-    
-  } catch(error){
-    throw error
+  } catch (error) {
+    throw error;
   }
-
 }
 
 async function getUserById(userId) {
@@ -48,32 +50,32 @@ async function getUserById(userId) {
     } = await client.query(`
     SELECT * FROM users
     WHERE "id" = ${userId};
-    `)
-    if (!user){
-      return null
+    `);
+    if (!user) {
+      return null;
     }
-    delete user.password
-    return user
-  } catch(error){
-    throw error
+    delete user.password;
+    return user;
+  } catch (error) {
+    throw error;
   }
-
 }
 
 async function getUserByUsername(username) {
- try {
+  try {
     const {
-      rows : [user]
-    } = await client.query(`
+      rows: [user],
+    } = await client.query(
+      `
     SELECT * FROM users
     WHERE username =$1;
-    `, [username])
-    return user
-  } catch(error){
-    throw error
+    `,
+      [username]
+    );
+    return user;
+  } catch (error) {
+    throw error;
   }
-
-
 }
 
 module.exports = {
@@ -81,7 +83,7 @@ module.exports = {
   getUser,
   getUserById,
   getUserByUsername,
-}
+};
 
 // async function getUser({ username, password }) {
 //   const user = await getUserByUsername(username);
@@ -89,7 +91,7 @@ module.exports = {
 //   const passwordsMatch = await bcrypt.compare(password, hashedPassword);
 //   try {
 //     const { rows:[user], } = await client.query(`
-//     SELECT * 
+//     SELECT *
 //     FROM users
 //     WHERE username=$1;
 //     `,[username])
@@ -103,10 +105,8 @@ module.exports = {
 //       delete user.password
 //       return user
 //     // }else {
-//     // return null 
-    
+//     // return null
 
-    
 //   } catch(error){
 //     throw error
 //   }

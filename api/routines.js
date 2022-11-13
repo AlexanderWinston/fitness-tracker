@@ -1,15 +1,11 @@
 const express = require("express");
 const {
   getAllPublicRoutines,
-  createRoutine,
-  getUserById,
   getRoutineById,
   updateRoutine,
   destroyRoutine,
-  getActivityById,
-  attachActivitiesToRoutines,
   getRoutineActivitiesByRoutine,
-  addActivityToRoutine
+  addActivityToRoutine,
 } = require("../db");
 const { requireUser } = require("./utils");
 const routinesRouter = express.Router();
@@ -17,18 +13,14 @@ const routinesRouter = express.Router();
 // GET /api/routines
 routinesRouter.get("/", async (req, res) => {
   const allRoutines = await getAllPublicRoutines();
-  console.log(allRoutines);
   res.send(allRoutines);
 });
 
 // POST /api/routines
 routinesRouter.post("/", requireUser, async (req, res, next) => {
-  const { creatorId, isPublic, name, goal } = req.body;
-  // const routineData = { creatorId, isPublic, name, goal };
+  const { isPublic, name, goal } = req.body;
+
   try {
-    // const routines = await createRoutine(routineData);
-   
-    // if (creatorId == req.user.id){
     res.send({
       creatorId: req.user.id,
       isPublic,
@@ -83,7 +75,7 @@ routinesRouter.delete("/:routineId", requireUser, async (req, res, next) => {
     if (routine) {
       if (routineId && routine.creatorId === req.user.id) {
         const destroyedRoutine = await destroyRoutine(routineId);
-		
+
         res.send(destroyedRoutine);
       } else {
         res.statusCode = 403;
@@ -106,56 +98,43 @@ routinesRouter.delete("/:routineId", requireUser, async (req, res, next) => {
 });
 
 // POST /api/routines/:routineId/activities
-routinesRouter.post('/:routineId/activities', async(req, res, next)=> {
-	
-  const originalRoutineId = req.params.routineId
-  
-  // const { id, creatorId, isPublic, name, goal} = req.body;
-  
-  // const activityData = {id, name, description};
-  // console.log(activityData)
-const routine = await getRoutineById(originalRoutineId)
-console.log(routine, "this is routine")
-try {
-  
-  if (routine){
-    // console.log(routine)
-    const {routineId, activityId, count, duration} = req.body
-    const routineAct =  (await getRoutineActivitiesByRoutine({id: originalRoutineId})).map(element => element.activityId)
+routinesRouter.post("/:routineId/activities", async (req, res, next) => {
+  const originalRoutineId = req.params.routineId;
 
+  const routine = await getRoutineById(originalRoutineId);
+  console.log(routine, "this is routine");
+  try {
+    if (routine) {
+      const { routineId, activityId, count, duration } = req.body;
+      const routineAct = (
+        await getRoutineActivitiesByRoutine({ id: originalRoutineId })
+      ).map((element) => element.activityId);
 
-    // console.log(routineAct.includes(activityId),"this is routineAct with activity id" )
-    // console.log(getRoutineActivitiesByRoutine, "line 123")
-    // console.log(routineAct, "this is routine activities line 119")
-      if(!routineAct.includes(activityId)){ 
-        // console.log("it works!")
-        // console.log(activityId, "activityId")
-        const addActivity = await addActivityToRoutine({routineId, activityId, count, duration})
-        // console.log(addActivityToRoutine, "line 131")
-        // console.log(addActivity, "this is line 132")
-        res.send(addActivity)
-      }else {
+      if (!routineAct.includes(activityId)) {
+        const addActivity = await addActivityToRoutine({
+          routineId,
+          activityId,
+          count,
+          duration,
+        });
+        res.send(addActivity);
+      } else {
         next({
-          error:"ActivityError",
-          message:`Activity ID ${activityId} already exists in Routine ID ${routineId}`,
-          name:"Error Activity"
-        })
-
+          error: "ActivityError",
+          message: `Activity ID ${activityId} already exists in Routine ID ${routineId}`,
+          name: "Error Activity",
+        });
       }
-
     } else {
       next({
         error: "NotARoutineError",
         message: "This function does not exist",
-        name: "NoRoutine"
-        
-      })
+        name: "NoRoutine",
+      });
     }
-    
   } catch ({ error, name, message }) {
     next(error, name, message);
   }
-})
-
+});
 
 module.exports = routinesRouter;

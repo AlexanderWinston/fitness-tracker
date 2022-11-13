@@ -72,30 +72,12 @@ usersRouter.post("/register", async (req, res, next) => {
 
 // GET /api/users/me
 usersRouter.get("/me", requireUser, async (req, res, next) => {
-  // if (!req.user){
-  // 	res.statusCode = 401
-  // 	res.send({
-  // 		error: "UserError",
-  // 		name:"Unauthorized User Error",
-  // 		message:"You must be logged in to perform this action"
-  // 	})
-  // }
-
   try {
     await getUserById(req.user.id);
     res.send({
       id: req.user.id,
       username: req.user.username,
     });
-    // const user = await getUserByUsername(username);
-    // console.log(user, 'this is user')
-    // const token =jwt.sign({ id: user.id, username}, JWT_SECRET)
-
-    // if(user.token == token ){
-    // 	console.log(token)
-    // 	res.send({ user })
-
-    // }
   } catch ({ name, message }) {
     next({ name, message });
   }
