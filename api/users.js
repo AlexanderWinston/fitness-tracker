@@ -13,25 +13,27 @@ const { requireUser } = require("./utils");
 // POST /api/users/login
 usersRouter.post("/login", async (req, res, next) => {
   const { username, password } = req.body;
-  if (!username || !password) {
-    next({
-      name: "MissingCredentialsError",
-      message: "Please supply both a username and password",
-    });
-  }
+  console.log(password, "this is password");
+
   try {
     const user = await getUserByUsername(username);
-    if (user && user.password == password) {
-      const token = jwt.sign({ id: user.id, username }, JWT_SECRET);
-      res.send({ message: "you're logged in!", token, user });
-    } else {
+    if (!user.password === password) {
       next({
         name: "IncorrectCredentialsError",
         message: "Username or Password is incorrect",
+        error: "Incorrect credentials",
       });
+    } else {
+      console.log(user.password, "this is user.password");
+      const token = jwt.sign({ id: user.id, username }, JWT_SECRET);
+      res.send({ message: "you're logged in!", token, user });
     }
-  } catch (error) {
-    next(error);
+  } catch ({ error, message, name }) {
+    next({
+      error,
+      message,
+      name,
+    });
   }
 });
 
