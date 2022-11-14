@@ -66,15 +66,16 @@ activitiesRouter.patch("/:activityId", requireUser, async (req, res, next) => {
     const activityId = req.params.activityId;
     const originalActivity = await getActivityById(activityId);
 
-    // const allActivities = (await getAllActivities()).map(
-    //   (element) => element.name
+   
     // );
     // console.log(allActivities, "this is allActivities");
     if (originalActivity) {
       const {name, description} = req.body;
+      const allActivities = (await getAllActivities()).map(
+        (element) => element.name)
       
       // console.log(updatedActivity, "this is updatedActivity");
-      // if (!allActivities.includes(updatedActivity.name)) {
+      if (!allActivities.includes(name)) {
       //   console.log(allActivities, "This is allActivities");
       //   console.log(
       //     allActivities.includes(
@@ -82,9 +83,9 @@ activitiesRouter.patch("/:activityId", requireUser, async (req, res, next) => {
       //       "this is allActivities & more"
       //     )
       //   );
-      const activity = await getActivityByName(name)
+      // const activity = await getActivityByName(name)
 
-      if (!activity){
+      // if (!activity){
       const updatedActivity = await updateActivity({
         id: activityId, name, description
       });
