@@ -61,34 +61,22 @@ activitiesRouter.post("/", requireUser, async (req, res, next) => {
 
 // PATCH /api/activities/:activityId
 activitiesRouter.patch("/:activityId", requireUser, async (req, res, next) => {
-  //need to troubleshoot error if updated name = original name
   try {
     const activityId = req.params.activityId;
     const originalActivity = await getActivityById(activityId);
 
-   
-    // );
-    // console.log(allActivities, "this is allActivities");
     if (originalActivity) {
-      const {name, description} = req.body;
+      const { name, description } = req.body;
       const allActivities = (await getAllActivities()).map(
-        (element) => element.name)
-      
-      // console.log(updatedActivity, "this is updatedActivity");
-      if (!allActivities.includes(name)) {
-      //   console.log(allActivities, "This is allActivities");
-      //   console.log(
-      //     allActivities.includes(
-      //       updatedActivity.name,
-      //       "this is allActivities & more"
-      //     )
-      //   );
-      // const activity = await getActivityByName(name)
+        (element) => element.name
+      );
 
-      // if (!activity){
-      const updatedActivity = await updateActivity({
-        id: activityId, name, description
-      });
+      if (!allActivities.includes(name)) {
+        const updatedActivity = await updateActivity({
+          id: activityId,
+          name,
+          description,
+        });
         res.send(updatedActivity);
       } else {
         next({
@@ -96,23 +84,7 @@ activitiesRouter.patch("/:activityId", requireUser, async (req, res, next) => {
           message: `An activity with name ${name} already exists`,
           name: "ActivityExists",
         });
-        // next({
-        //   error:"activityAlreadyExistsError",
-        //   message:`An activity with name ${originalActivity.name} already exists`,
-        //   name: "ActivityExists"
-        // })
       }
-
-      //           if (updatedActivity.name !== originalActivity.name){
-      // console.log(originalActivity.name, " this is activity name")
-      // console.log(updatedActivity.name, "this is updated name")
-      // res.send(updatedActivity);
-      // } else {
-      //     next ({
-      //     error:"activityAlreadyExistsError",
-      //     message:`An activity with name ${originalActivity.name} already exists`,
-      //     name: "ActivityExists"
-      //   })
     } else {
       next({
         error: "noActivity",
