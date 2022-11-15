@@ -13,7 +13,6 @@ const { requireUser } = require("./utils");
 // POST /api/users/login
 usersRouter.post("/login", async (req, res, next) => {
   const { username, password } = req.body;
-  console.log(password, "this is password");
 
   try {
     const user = await getUserByUsername(username);
@@ -24,7 +23,6 @@ usersRouter.post("/login", async (req, res, next) => {
         error: "Incorrect credentials",
       });
     } else {
-      console.log(user.password, "this is user.password");
       const token = jwt.sign({ id: user.id, username }, JWT_SECRET);
       res.send({ message: "you're logged in!", token, user });
     }
@@ -60,7 +58,6 @@ usersRouter.post("/register", async (req, res, next) => {
         message: `User ${username} is already taken.`,
       });
     } else {
-      console.log(username);
       const user = await createUser({ username, password });
       const token = jwt.sign({ id: user.id, username }, JWT_SECRET, {
         expiresIn: "1w",

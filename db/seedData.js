@@ -11,14 +11,12 @@ const {
 
 async function dropTables() {
   try {
-    console.log("Dropping All Tables...");
     await client.query(`
     DROP TABLE IF EXISTS routine_activities;
     DROP TABLE IF EXISTS routines;
     DROP TABLE IF EXISTS activities;
     DROP TABLE IF EXISTS users;
     `);
-    console.log("finished dropping");
   } catch (error) {
     throw error;
   }
@@ -26,7 +24,6 @@ async function dropTables() {
 
 async function createTables() {
   try {
-    console.log("Starting to build tables...");
     await client.query(`CREATE TABLE users(
       id SERIAL PRIMARY KEY,
       username VARCHAR(255) UNIQUE NOT NULL,
@@ -56,7 +53,6 @@ async function createTables() {
       UNIQUE ("routineId", "activityId")
     );
     `);
-    console.log("Finished building tables...");
   } catch (error) {
     throw error;
   }
@@ -237,7 +233,7 @@ async function rebuildDB() {
     await createInitialUsers();
     await createInitialActivities();
     await createInitialRoutines();
-    // await createInitialRoutineActivities()
+    await createInitialRoutineActivities();
   } catch (error) {
     console.log("Error during rebuildDB");
     throw error;

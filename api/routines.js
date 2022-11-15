@@ -22,7 +22,6 @@ routinesRouter.get("/", async (req, res) => {
 routinesRouter.post("/", requireUser, async (req, res, next) => {
   const { isPublic, name, goal } = req.body;
   const existingRoutine = await getAllRoutines(name);
-  console.log(existingRoutine.creatorId, "this is existing routine");
   try {
     if (existingRoutine.creatorId === req.user.id) {
       next({
@@ -37,7 +36,6 @@ routinesRouter.post("/", requireUser, async (req, res, next) => {
         name,
         goal,
       });
-      console.log(newRoutine, "this is newroutine");
       res.send(newRoutine);
     }
   } catch ({ name, message }) {
@@ -115,7 +113,6 @@ routinesRouter.post("/:routineId/activities", async (req, res, next) => {
   const originalRoutineId = req.params.routineId;
 
   const routine = await getRoutineById(originalRoutineId);
-  console.log(routine, "this is routine");
   try {
     if (routine) {
       const { routineId, activityId, count, duration } = req.body;

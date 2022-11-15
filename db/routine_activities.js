@@ -54,7 +54,7 @@ async function getRoutineActivitiesByRoutine({ id }) {
     `,
       [id]
     );
-    console.log(routineActivities, "!!!!");
+
     return routineActivities;
   } catch (error) {
     throw error;

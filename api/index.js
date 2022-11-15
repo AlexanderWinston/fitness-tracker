@@ -57,13 +57,11 @@ router.use((error, req, res, next) => {
     name: error.name,
     message: error.message,
   });
-  next()
+  next();
 });
 
-router.use((req, res) =>{
-  res.statusCode = 404
-  res.send({message:"page not found"})
-  
-
-})
+router.use((req, res) => {
+  res.statusCode = 404;
+  res.send({ message: "page not found" });
+});
 module.exports = router;
